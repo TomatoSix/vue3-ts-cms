@@ -1,0 +1,15 @@
+# https://editorconfig.org
+
+root = true
+
+[*] # 表示所有文件适用
+charset = utf-8
+indent_style = space # 缩进风格
+indent_size = 2
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.md]  # 表示md文件适用
+insert_final_newline = false
+trim_trailing_whitespace = false
