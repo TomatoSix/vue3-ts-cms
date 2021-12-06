@@ -29,3 +29,6 @@
 
 # husky 
 git 提交代码前可以格式化代码
+
+# git commit 代码提交规范和限制
+commitizen 帮助我们编写规范commit message的工具
