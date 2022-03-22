@@ -13,8 +13,10 @@
     "baseUrl": ".",
     "types": ["webpack-env"],
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "components": ["src/components/*"]
     },
+    // 指定项目中可以使用哪些库的类型
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
   "include": [
