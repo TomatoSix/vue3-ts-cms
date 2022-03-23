@@ -1,13 +1,5 @@
 <template>
   <div class="hy-form">
-    <!-- header插槽 -->
-    <!-- 插槽的使用
-      <template #header>
-    -->
-    <div class="header">
-      <slot name="header"></slot>
-    </div>
-    <!-- 表单 -->
     <el-form :label-width="labelWidth">
       <el-row>
         <template v-for="item in formItems" :key="item.label">
@@ -59,15 +51,12 @@
         </template>
       </el-row>
     </el-form>
-    <div class="footer">
-      <slot name="footer"></slot>
-    </div>
   </div>
 </template>
 
 <script lang="ts">
 // 需要引入PropType属性, 对props进行类型断言
-import { defineComponent, PropType, ref, watch } from 'vue'
+import { defineComponent, PropType, computed } from 'vue'
 import { IFormItem } from '../types'
 
 export default defineComponent({
@@ -107,19 +96,14 @@ export default defineComponent({
   },
   emits: ['update: modelValue'],
   setup(props, { emit }) {
-    // 浅拷贝，生成了一个新的对象放到formData中
-    const formData = ref({ ...props.modelValue })
-    // 监听formData的修改, 实现双向绑定
-    watch(
-      formData,
-      (newValue) => {
-        emit('update: modelValue', newValue)
-        // console.log(newValue, 'newValue')
+    const formData = computed({
+      get: () => {
+        return props.modelValue
       },
-      {
-        deep: true
+      set: (newValue) => {
+        emit('update: modelValue', newValue)
       }
-    )
+    })
     return {
       formData
     }

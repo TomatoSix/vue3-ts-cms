@@ -2,7 +2,7 @@ type IFormType = 'input' | 'password' | 'select' | 'datepicker'
 
 export interface IFormItem {
   // form表单组件类型
-  field: string
+  field: string // 表单名称
   type: IFormType
   label: string
   placeholder?: any

@@ -310,3 +310,4 @@ export default defineComponent({
 
    1. v-bind="searchFormConfig" 类似于扩展运算符
    2. :searchFormConfig="searchFormConfig" 则要求组件中的 props 必须有这个属性
+   3. v-model 的使用

@@ -13,7 +13,7 @@ import { IAccount } from '@/service/login/types'
 import { ILoginState } from './types'
 import { IRootState } from '../types'
 
-// 模块中state类型， 根模块
+// 传入两个泛型,模块中state类型， 根模块
 const loginModule: Module<ILoginState, IRootState> = {
   namespaced: true,
   state() {
