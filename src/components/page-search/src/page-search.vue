@@ -6,8 +6,15 @@
       </template>
       <template #footer
         ><div class="handle-btns">
-          <el-button icon="el-icon-refresh">重置</el-button>
-          <el-button type="primary" icon="el-icon-search">搜索</el-button>
+          <el-button icon="el-icon-refresh" @click="handleResetClick"
+            >重置</el-button
+          >
+          <el-button
+            type="primary"
+            icon="el-icon-search"
+            @click="handleQueryClick"
+            >搜索</el-button
+          >
         </div></template
       >
     </hy-form>
@@ -27,16 +34,46 @@ export default defineComponent({
       required: true
     }
   },
-  setup() {
+  emits: ['resetBtnClick', 'queryBtnClick'],
+
+  setup(props, { emit }) {
     // reactive进行双向绑定存在问题
-    const formData = ref({
-      name: '',
-      password: '',
-      sport: '',
-      createTime: ''
-    })
+    // 1. 双向绑定的属性应该是由配置文件的field来决定
+    const formItems = props.searchFormConfig.formItems ?? []
+
+    const formOriginData: any = {}
+    for (const item of formItems) {
+      formOriginData[item.field] = ''
+    }
+    const formData = ref(formOriginData)
+    // const formData = ref({
+    //   name: '',
+    //   password: '',
+    //   sport: '',
+    //   createTime: ''
+    // })
+
+    /**
+     * @desc 重置按钮
+     * @date 2022-03-24
+     * @returns {any}
+     */
+    const handleResetClick = () => {
+      // for (const key in formOriginData) {
+      //   formData.value[`${key}`] = formOriginData[key]
+      // }
+      formData.value = formOriginData
+      emit('resetBtnClick')
+    }
+
+    // 3.优化三: 当用户点击搜索
+    const handleQueryClick = () => {
+      emit('queryBtnClick', formData.value)
+    }
     return {
-      formData
+      formData,
+      handleResetClick,
+      handleQueryClick
     }
   }
 })

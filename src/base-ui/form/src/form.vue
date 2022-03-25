@@ -105,6 +105,7 @@ export default defineComponent({
       })
     }
   },
+  // update:xxx 叫做更新触发函数
   emits: ['update: modelValue'],
   setup(props, { emit }) {
     // 浅拷贝，生成了一个新的对象放到formData中
