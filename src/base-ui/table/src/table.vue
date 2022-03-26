@@ -27,6 +27,7 @@
         v-if="showIndexColumn"
         type="index"
         label="序号"
+        width="70"
         align="center"
       ></el-table-column>
       <template v-for="propItem in propList" :key="propItem.prop">
@@ -52,17 +53,17 @@
       </template>
     </el-table>
     <!-- 尾部分页器 -->
+    <!-- currentPage就是当前第几页
+         page-size就是一页几行数据,相当于size
+    -->
     <div class="footer">
       <slot name="footer">
         <el-pagination
-          v-model:currentPage="currentPage4"
-          v-model:page-size="pageSize4"
-          :page-sizes="[100, 200, 300, 400]"
-          :small="small"
-          :disabled="disabled"
-          :background="background"
+          :current-page="pageInfo.currentPage"
+          :page-size="pageInfo.pageSize"
+          :page-sizes="[10, 20, 30]"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="400"
+          :total="listCount"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         />
@@ -76,14 +77,23 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
   props: {
+    // 标题
     title: {
       type: String,
-      default: () => ''
+      // 如果是对象的话，就要用函数返回
+      default: ''
     },
+    // 列表数据
     listData: {
       type: Array,
       required: true
     },
+    // 数据总数
+    listCount: {
+      type: Number,
+      default: 0
+    },
+    // 首行数据名称
     propList: {
       //例如{ prop: 'name', label: '用户名', minWidth: '100',slotName: 'status'  }
       type: Array,
@@ -98,9 +108,14 @@ export default defineComponent({
     showSelectColumn: {
       type: Boolean,
       default: () => false
+    },
+    // 分页器数据
+    pageInfo: {
+      type: Object,
+      default: () => ({ currentPage: 0, pageSize: 10 })
     }
   },
-  emits: ['selectionChange'],
+  emits: ['selectionChange', 'update:pageInfo'],
   setup(props, { emit }) {
     /**
      * @desc 自定义可选触发事件
@@ -111,8 +126,17 @@ export default defineComponent({
     const handleSelectionChange = (selection: any) => {
       emit('selectionChange', selection)
     }
+    const handleSizeChange = (pageSize: number) => {
+      // 触发'update:pageInfo', 并重新返回pageInfo对象
+      emit('update:pageInfo', { ...props.pageInfo, pageSize })
+    }
+    const handleCurrentChange = (currentPage: number) => {
+      emit('update:pageInfo', { ...props.pageInfo, currentPage })
+    }
     return {
-      handleSelectionChange
+      handleSelectionChange,
+      handleSizeChange,
+      handleCurrentChange
     }
   }
 })

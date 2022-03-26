@@ -1,6 +1,10 @@
 <template>
   <div class="page-search">
-    <hy-form v-bind="searchFormConfig" v-model="formData">
+    <hy-form
+      v-bind="searchFormConfig"
+      v-model="formData"
+      @update:modelValue="modelValueChange"
+    >
       <template #header>
         <h2>高级检索</h2>
       </template>
@@ -46,6 +50,7 @@ export default defineComponent({
       formOriginData[item.field] = ''
     }
     const formData = ref(formOriginData)
+    // 就是如下
     // const formData = ref({
     //   name: '',
     //   password: '',
@@ -66,14 +71,30 @@ export default defineComponent({
       emit('resetBtnClick')
     }
 
-    // 3.优化三: 当用户点击搜索
+    /**
+     * @desc 搜索按钮
+     * @date 2022-03-26
+     * @returns {any}
+     */
     const handleQueryClick = () => {
       emit('queryBtnClick', formData.value)
     }
+
+    /**
+     * @desc 监听数据修改
+     * @date 2022-03-26
+     * @param {any} data:any
+     * @returns {any}
+     */
+    const modelValueChange = (data: any) => {
+      console.log(data, 'data')
+    }
+
     return {
       formData,
       handleResetClick,
-      handleQueryClick
+      handleQueryClick,
+      modelValueChange
     }
   }
 })

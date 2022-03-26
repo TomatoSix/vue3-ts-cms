@@ -27,7 +27,8 @@
                   :placeholder="item.placeholder"
                   v-bind="item.otherOptions"
                   :show-password="item.type === 'password'"
-                  v-model="formData[`${item.field}`]"
+                  :model-value="modelValue[`${item.field}`]"
+                  @update:modelValue="handleValueChange($event, item.field)"
                 />
               </template>
               <!-- 下拉框 -->
@@ -36,7 +37,8 @@
                   :placeholder="item.placeholder"
                   v-bind="item.otherOptions"
                   style="width: 100%"
-                  v-model="formData[`${item.field}`]"
+                  :model-value="modelValue[`${item.field}`]"
+                  @update:modelValue="handleValueChange($event, item.field)"
                 >
                   <el-option
                     v-for="option in item.options"
@@ -51,7 +53,8 @@
                 <el-date-picker
                   style="width: 100%"
                   v-bind="item.otherOptions"
-                  v-model="formData[`${item.field}`]"
+                  :model-value="modelValue[`${item.field}`]"
+                  @update:modelValue="handleValueChange($event, item.field)"
                 ></el-date-picker>
               </template>
             </el-form-item>
@@ -73,6 +76,7 @@ import { IFormItem } from '../types'
 export default defineComponent({
   props: {
     // 对应绑定的值
+    // modelValue是v-model绑定的属性名称,不能改变
     modelValue: {
       type: Object,
       required: true
@@ -105,24 +109,31 @@ export default defineComponent({
       })
     }
   },
-  // update:xxx 叫做更新触发函数
-  emits: ['update: modelValue'],
+  // update:modelValue 叫做更新触发函数, 是modelValue接收的方法
+  emits: ['update:modelValue'],
   setup(props, { emit }) {
-    // 浅拷贝，生成了一个新的对象放到formData中
-    const formData = ref({ ...props.modelValue })
-    // 监听formData的修改, 实现双向绑定
-    watch(
-      formData,
-      (newValue) => {
-        emit('update: modelValue', newValue)
-        // console.log(newValue, 'newValue')
-      },
-      {
-        deep: true
-      }
-    )
+    // 方法一: 采用双向绑定
+    // 浅拷贝，生成了一个新的对象放到formData中, modelValue的值修改, formData也会修改
+    // const formData = ref({ ...props.modelValue })
+    // // 监听formData的修改, 实现双向绑定
+    // watch(
+    //   formData,
+    //   (newValue) => {
+    //     emit('update: modelValue', newValue)
+    //   },
+    //   {
+    //     deep: true
+    //   }
+    // )
+
+    // 方法二, 采用:model-value直接绑定props中的modelValue
+    const handleValueChange = function (value: any, field: string) {
+      console.log(value, field, '111')
+
+      emit('update:modelValue', { ...props.modelValue, [field]: value })
+    }
     return {
-      formData
+      handleValueChange
     }
   }
 })

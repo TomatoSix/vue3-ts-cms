@@ -2,9 +2,13 @@
   <div class="page-content">
     <hy-table
       :listData="dataList"
+      :listCount="dataCount"
       v-bind="contentTableConfig"
+      v-model:pageInfo="pageInfo"
       @selectionChange="selectionChange"
+      @update:pageInfo="pageInfoChange"
     >
+      <!-- 插槽集合 -->
       <template #headerHandler>
         <el-button type="primary" size="medium">新建用户</el-button>
       </template>
@@ -22,7 +26,7 @@
       <template #updateAt="scope">
         <span>{{ $filters.formatTime(scope.row.updateAt) }}</span>
       </template>
-      <template #handle>
+      <template #handler>
         <div class="handle-btns">
           <el-button size="mini" icon="el-icon-edit">编辑</el-button>
           <el-button size="mini" icon="el-icon-delete">删除</el-button>
@@ -34,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent, computed, ref, watch } from 'vue'
 import HyTable from '@/base-ui/table'
 import { useStore } from '@/store'
 
@@ -52,30 +56,62 @@ export default defineComponent({
       required: true
     }
   },
+
   setup(props) {
     const store = useStore()
-    store.dispatch('system/getPageListAction', {
-      // pageUrl: '/users/list',
-      pageName: props.pageName,
-      queryInfo: {
-        offset: 0,
-        size: 30
-      }
-    })
+
     // 从vuex中获取用户列表数据和列表总数
     const dataList = computed(() => {
       // console.log(store.state.system.userList)
-
       return store.getters[`system/pageListData`](props.pageName)
     })
-    // const userCount = computed(() => store.state.system.roleList)
+    const dataCount = computed(() => {
+      return store.getters[`system/pageListCount`](props.pageName)
+    })
 
+    // 双向绑定pageInfo
+    const pageInfo = ref({
+      currentPage: 1,
+      pageSize: 10
+    })
+    watch(pageInfo, () => getPageData(), { deep: true })
+
+    /**
+     * @desc 是否选中
+     * @date 2022-03-26
+     * @param {any} data:any
+     * @returns {any}
+     */
     const selectionChange = (data: any) => {
       console.log(data[0].name, 'id')
     }
+
+    /**
+     * @desc 获取用户数据
+     * @date 2022-03-26
+     * @returns {any}
+     */
+    const getPageData = (queryInfo: any = {}) => {
+      store.dispatch('system/getPageListAction', {
+        // pageUrl: '/users/list',
+        pageName: props.pageName,
+        queryInfo: {
+          offset: (pageInfo.value.currentPage - 1) * pageInfo.value.pageSize,
+          size: pageInfo.value.pageSize,
+          ...queryInfo
+        }
+      })
+    }
+    const pageInfoChange = () => {
+      console.log(pageInfo, 'pageInfo')
+    }
     return {
       dataList,
-      selectionChange
+      dataCount,
+      pageInfo,
+      selectionChange,
+      getPageData,
+      pageInfoChange
     }
   }
 })
